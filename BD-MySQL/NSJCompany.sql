@@ -1,6 +1,5 @@
 create database nsjcompany;
 use nsjcompany;
-
 #Con esto se pueden colocar default en los datos de dateTime
 	SET SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 	SET SQL_MODE='ALLOW_INVALID_DATES';
@@ -50,7 +49,6 @@ INSERT INTO `categoria` VALUES
 (4,'Galletas'),
 (5,'Limpieza'),
 (6,'Alimentos ');
-
 update categoria set nombre='Limpieza' where idCategoria=5;
 
 CREATE TABLE `producto` (
@@ -71,8 +69,8 @@ ADD CONSTRAINT `idCategoria_fk`
   REFERENCES `nsjcompany`.`categoria` (`idCategoria`)
   ON DELETE CASCADE
   ON UPDATE CASCADE;
-
-CREATE TABLE cliente (
+  
+  CREATE TABLE `cliente` (
   idCliente INT(12) NOT NULL PRIMARY KEY AUTO_INCREMENT,
   nombre VARCHAR(50) NOT NULL,
   apellido VARCHAR(50) NOT NULL,
@@ -81,20 +79,44 @@ CREATE TABLE cliente (
   correo VARCHAR(80) NOT NULL,
   direccion VARCHAR(100) NOT NULL
 );
+CREATE TABLE `proveedores` (
+  `idProveedores` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(45) NOT NULL,
+  `direccion` varchar(45) not null,
+  `numero` int not null,
+  `correo` varchar(45) null,
+  PRIMARY KEY (`idProveedores`)
+);
+
+CREATE TABLE `union_pp` (
+  `idUnion_pp` int(11) NOT NULL AUTO_INCREMENT,
+  `idProducto` int(11) NOT NULL,
+  `idProveedor` int(11) NOT NULL,
+  PRIMARY KEY (`idUnion_pp`),
+  KEY `idProducto_fk_idx` (`idProducto`),
+  KEY `idProveedor_fk_idx` (`idProveedor`),
+  CONSTRAINT `idProducto_fk1` 
+  FOREIGN KEY (`idProducto`) 
+  REFERENCES `producto` (`idProducto`) 
+  ON DELETE CASCADE 
+  ON UPDATE CASCADE,
+  CONSTRAINT `idProveedor_fk` 
+  FOREIGN KEY (`idProveedor`) 
+  REFERENCES `proveedores` (`idProveedores`) 
+  ON DELETE CASCADE 
+  ON UPDATE CASCADE
+);
+
 use nsjcompany;
 select * from personal;
 select * from categoria;
 select * from tipo_usuario;
 select * from producto;
+select * from cliente;
+select * from proveedores;
 
 select p.codigoI, p.nombre, p.precio, c.nombre as 'Categoria' ,p.cantidad, p.stock  from producto as p
 inner join categoria as c on p.idCategoria = c.idCategoria;
 
-CREATE TABLE `nsjcompany`.`proveedores` (
-  `idproveedores` INT NOT NULL AUTO_INCREMENT,
-  `nombre` VARCHAR(45) NOT NULL,
-  `direccion` VARCHAR(45) NOT NULL,
-  `telefono` INT NOT NULL,
-  `correo` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`idproveedores`));
+#Crear tabla que almacene ventas
 
