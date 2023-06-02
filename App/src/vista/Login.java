@@ -10,7 +10,7 @@ import java.util.Date;
 import javax.swing.JOptionPane;
 
 public class Login extends javax.swing.JFrame {
-    public String usuarioCorrecto = "ivan";
+    public String usuarioCorrecto = "alan";
     public String contraseñaCorrecta = "1234";
 
     public Login() {
@@ -120,9 +120,6 @@ public class Login extends javax.swing.JFrame {
                 this.dispose();
                 Menu menu = new Menu(personal);
                 menu.setVisible(true);
-                
-                
-                
             }
             else{
                 JOptionPane.showMessageDialog(null, "No esta Ingresado en el sistema");
