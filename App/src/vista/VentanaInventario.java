@@ -284,10 +284,12 @@ public class VentanaInventario extends javax.swing.JDialog {
 
         if (cajaNombre.getText().equals("") || cajaPrecio.getText().equals("") || cajaCantidad.getText().equals("") || cajaStock.getText().equals("")) {
             JOptionPane.showMessageDialog(null, "Rellene los campos");
-        } else {
+        } 
+        else {
             if (seleccionCombo == 0) {
                 JOptionPane.showMessageDialog(null, "Escoja una categoria");
-            } else {
+            } 
+            else {
                 producto.setCodigoI(cajaCodigo.getText());
                 producto.setNombre(cajaNombre.getText());
                 producto.setPrecio(Double.parseDouble(cajaPrecio.getText()));
@@ -295,10 +297,12 @@ public class VentanaInventario extends javax.swing.JDialog {
                 producto.setCantidad(Integer.parseInt(cajaCantidad.getText()));
                 producto.setStock(Integer.parseInt(cajaStock.getText()));
                 producto.setNombreCategoria(FiltrarXCombo.toString());
+                
                 if (ctlrPrododucto.insertar(producto)) {
                     JOptionPane.showMessageDialog(null, "no se ah insertado");
                     actualizarTabla();
-                } else {
+                } 
+                else {
                     JOptionPane.showMessageDialog(null, "Registro Insertado");
                     actualizarTabla();
                     limpiarCajas();
