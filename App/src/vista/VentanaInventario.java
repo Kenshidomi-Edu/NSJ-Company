@@ -4,11 +4,15 @@ import ConexionBD.Conexion;
 import Controlador.ControladorProducto;
 import Modelo.Categorias;
 import Modelo.Producto;
+import Reportes.Excel;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.ResultSetMetaData;
 import java.awt.event.ItemEvent;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -208,6 +212,11 @@ public class VentanaInventario extends javax.swing.JDialog {
 
         botonImprimir.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
         botonImprimir.setText("IMPRIMIR");
+        botonImprimir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonImprimirActionPerformed(evt);
+            }
+        });
         panel1.add(botonImprimir, new org.netbeans.lib.awtextra.AbsoluteConstraints(860, 620, 120, 50));
 
         volverAMenu.setFont(new java.awt.Font("Arial", 1, 24)); // NOI18N
@@ -224,11 +233,6 @@ public class VentanaInventario extends javax.swing.JDialog {
         FiltrarXCombo.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 FiltrarXComboItemStateChanged(evt);
-            }
-        });
-        FiltrarXCombo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                FiltrarXComboActionPerformed(evt);
             }
         });
         panel1.add(FiltrarXCombo, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 530, 170, 40));
@@ -284,25 +288,21 @@ public class VentanaInventario extends javax.swing.JDialog {
 
         if (cajaNombre.getText().equals("") || cajaPrecio.getText().equals("") || cajaCantidad.getText().equals("") || cajaStock.getText().equals("")) {
             JOptionPane.showMessageDialog(null, "Rellene los campos");
-        } 
-        else {
+        } else {
             if (seleccionCombo == 0) {
                 JOptionPane.showMessageDialog(null, "Escoja una categoria");
-            } 
-            else {
+            } else {
                 producto.setCodigoI(cajaCodigo.getText());
                 producto.setNombre(cajaNombre.getText());
-                producto.setPrecio(Double.parseDouble(cajaPrecio.getText()));
+                producto.setPrecio(Integer.parseInt(cajaPrecio.getText()));
                 producto.setIdCategoria(seleccionCombo);
                 producto.setCantidad(Integer.parseInt(cajaCantidad.getText()));
                 producto.setStock(Integer.parseInt(cajaStock.getText()));
                 producto.setNombreCategoria(FiltrarXCombo.toString());
-                
                 if (ctlrPrododucto.insertar(producto)) {
                     JOptionPane.showMessageDialog(null, "no se ah insertado");
                     actualizarTabla();
-                } 
-                else {
+                } else {
                     JOptionPane.showMessageDialog(null, "Registro Insertado");
                     actualizarTabla();
                     limpiarCajas();
@@ -391,7 +391,7 @@ public class VentanaInventario extends javax.swing.JDialog {
                 cajaNumeros.setText(String.valueOf(rs.getInt("idProducto")));
                 cajaCodigo.setText(rs.getString("codigoI"));
                 cajaNombre.setText(rs.getString("nombre"));
-                cajaPrecio.setText(String.valueOf(rs.getDouble("precio")));
+                cajaPrecio.setText(String.valueOf(rs.getInt("precio")));
                 comboCategoria.setSelectedIndex(rs.getInt("idCategoria"));
                 cajaCantidad.setText(String.valueOf(rs.getInt("cantidad")));
                 cajaStock.setText(String.valueOf(rs.getInt("stock")));
@@ -410,7 +410,7 @@ public class VentanaInventario extends javax.swing.JDialog {
         //Aqui estamos Actualizando la TAbla
         producto.setCodigoI(cajaCodigo.getText());
         producto.setNombre(cajaNombre.getText());
-        producto.setPrecio(Double.parseDouble(cajaPrecio.getText()));
+        producto.setPrecio(Integer.parseInt(cajaPrecio.getText()));
         producto.setIdCategoria(seleccionCombo);
         producto.setCantidad(Integer.parseInt(cajaCantidad.getText()));
         producto.setStock(Integer.parseInt(cajaStock.getText()));
@@ -494,9 +494,13 @@ public class VentanaInventario extends javax.swing.JDialog {
         limpiarCajas();
     }//GEN-LAST:event_imagenFondoMouseClicked
 
-    private void FiltrarXComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FiltrarXComboActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_FiltrarXComboActionPerformed
+    private void botonImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonImprimirActionPerformed
+        try {
+            Excel.reporte();
+        } catch (IOException ex) {
+            Logger.getLogger(VentanaInventario.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_botonImprimirActionPerformed
     public void actualizarTabla() {
         DefaultTableModel modeloTabla = new DefaultTableModel();
         tablaInverntario.setModel(modeloTabla);

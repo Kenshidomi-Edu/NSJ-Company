@@ -19,7 +19,8 @@ public class Menu extends javax.swing.JFrame {
         this.personal = personal;
         
         nombreDelAtendedor.setText(personal.getNombre());
-        numeroDelAtendedor.setText(personal.getUltima_sesion());
+        //numeroDelAtendedor.setText(personal.getUltima_sesion());
+        numeroDelAtendedor.setText(String.valueOf(personal.getNAtendedor()));
         
         if(personal.getIdTipo_usuario() == 1){
             botonCuadrataje.setVisible(false);
@@ -32,6 +33,8 @@ public class Menu extends javax.swing.JFrame {
             etiquetaInventario.setVisible(false);
             botonProveedores.setVisible(false);
             etiquetaProovedores.setText("Cuadrar Caja");
+            //botonSalir.setBounds(460, 450, 230, 210);
+            botonSalir.setLocation(460, 450);
             
         }
     }
@@ -211,8 +214,8 @@ public class Menu extends javax.swing.JFrame {
 
     private void botonVentasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonVentasActionPerformed
         
-        VentanaVentas ventanaV = new VentanaVentas(this, true);
-        ventanaV.setVisible(true);
+        VentanaVentas ventana = new VentanaVentas(personal);
+        ventana.setVisible(true);
     }//GEN-LAST:event_botonVentasActionPerformed
 
     private void botonProveedoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonProveedoresActionPerformed
@@ -231,7 +234,9 @@ public class Menu extends javax.swing.JFrame {
     }//GEN-LAST:event_botonPersonalActionPerformed
 
     private void botonCuadratajeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonCuadratajeActionPerformed
-        JOptionPane.showMessageDialog(null, "me presionaste");
+        CuadrarCaja cuadrarCaja = new CuadrarCaja(personal);
+        cuadrarCaja.setVisible(true);
+        //JOptionPane.showMessageDialog(null, "me presionaste");
     }//GEN-LAST:event_botonCuadratajeActionPerformed
 
     

@@ -10,12 +10,19 @@ import java.util.Date;
 import javax.swing.JOptionPane;
 
 public class Login extends javax.swing.JFrame {
-    public String usuarioCorrecto = "alan";
-    public String contraseñaCorrecta = "1234";
+    Personal personal;
 
     public Login() {
         initComponents();
         setLocationRelativeTo(null);
+    }
+    
+    public Login(Personal personal){
+        initComponents();
+        setLocationRelativeTo(null);
+        this.personal = personal;
+        
+        cajaUsuario.setText(personal.getNombreUsuario());
     }
 
     @SuppressWarnings("unchecked")
@@ -30,6 +37,7 @@ public class Login extends javax.swing.JFrame {
         cajaUsuario = new javax.swing.JTextField();
         cajaContraseña = new javax.swing.JPasswordField();
         btnIniciar = new javax.swing.JButton();
+        botonRegistro = new javax.swing.JButton();
         imagenFondo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -65,6 +73,7 @@ public class Login extends javax.swing.JFrame {
         jPanel1.add(cajaContraseña, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 360, 160, -1));
 
         btnIniciar.setBackground(new java.awt.Color(255, 255, 255));
+        btnIniciar.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         btnIniciar.setForeground(new java.awt.Color(0, 0, 0));
         btnIniciar.setText("Iniciar Seccion");
         btnIniciar.addActionListener(new java.awt.event.ActionListener() {
@@ -72,7 +81,18 @@ public class Login extends javax.swing.JFrame {
                 btnIniciarActionPerformed(evt);
             }
         });
-        jPanel1.add(btnIniciar, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 430, 180, 40));
+        jPanel1.add(btnIniciar, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 430, 180, 40));
+
+        botonRegistro.setBackground(new java.awt.Color(255, 255, 255));
+        botonRegistro.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        botonRegistro.setForeground(new java.awt.Color(0, 0, 0));
+        botonRegistro.setText("Registrarse");
+        botonRegistro.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonRegistroActionPerformed(evt);
+            }
+        });
+        jPanel1.add(botonRegistro, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 430, 110, 40));
 
         imagenFondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/fondo.jpg"))); // NOI18N
         jPanel1.add(imagenFondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
@@ -119,13 +139,26 @@ public class Login extends javax.swing.JFrame {
             if(ctlPersonal.iniciarSesion(personal)){
                 this.dispose();
                 Menu menu = new Menu(personal);
+                VentanaVentas ventana = new VentanaVentas(personal);
+                CuadrarCaja cuadrarCaja = new CuadrarCaja(personal);
                 menu.setVisible(true);
+                
+                
+                
             }
             else{
                 JOptionPane.showMessageDialog(null, "No esta Ingresado en el sistema");
             }
         }
     }//GEN-LAST:event_btnIniciarActionPerformed
+
+    private void botonRegistroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonRegistroActionPerformed
+        VentanaPersonal ventanaPersonal = new VentanaPersonal();
+        ventanaPersonal.setVisible(true);
+        ventanaPersonal.setSize(440, 700);
+        dispose();
+        
+    }//GEN-LAST:event_botonRegistroActionPerformed
 
     
     public static void main(String args[]) {
@@ -161,6 +194,7 @@ public class Login extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton botonRegistro;
     private javax.swing.JButton btnIniciar;
     private javax.swing.JButton btnSalir;
     private javax.swing.JPasswordField cajaContraseña;

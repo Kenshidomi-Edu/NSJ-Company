@@ -4,6 +4,7 @@ import ConexionBD.Conexion;
 import Controlador.CifrarContraseña;
 import Controlador.ControladorPersonal;
 import Modelo.Personal;
+import java.awt.Color;
 import java.sql.ResultSetMetaData;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -24,6 +25,27 @@ public class VentanaPersonal extends javax.swing.JDialog {
         cajaidPersona.setVisible(false);
         btn_eliminar.setVisible(false);
         btn_actualizar.setVisible(false);
+        agregarRegister.setVisible(false);
+    }
+    
+    public VentanaPersonal(){
+        initComponents();
+        volverAMenu.setText("Salir");
+        volverAMenu.setBackground(Color.red);
+        volverAMenu.setForeground(Color.white);
+        setLocation(450, 10);
+        cajaidPersona.setVisible(false);
+        btn_eliminar.setVisible(false);
+        btn_actualizar.setVisible(false);
+        tablaPersonal.setVisible(false);
+        jLabel6.setVisible(false);
+        jLabel7.setVisible(false);
+        cajaSalario.setText("1");
+        cajaSalario.setVisible(false);
+        cajaCargo.setText("2");
+        cajaCargo.setVisible(false);
+        btn_agregar.setVisible(false);
+        agregarRegister.setVisible(true);
     }
 
     @SuppressWarnings("unchecked")
@@ -60,6 +82,7 @@ public class VentanaPersonal extends javax.swing.JDialog {
         SeleccionarFechar = new com.toedter.calendar.JDateChooser();
         jLabel8 = new javax.swing.JLabel();
         cajaidPersona = new javax.swing.JTextField();
+        agregarRegister = new javax.swing.JButton();
         ImagenFondo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -256,6 +279,17 @@ public class VentanaPersonal extends javax.swing.JDialog {
         jLabel8.setText("Fecha de Ingreso:");
         jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 370, -1, -1));
         jPanel1.add(cajaidPersona, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 80, 40, -1));
+
+        agregarRegister.setBackground(new java.awt.Color(0, 204, 0));
+        agregarRegister.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
+        agregarRegister.setForeground(new java.awt.Color(255, 255, 255));
+        agregarRegister.setText("Registrar");
+        agregarRegister.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                agregarRegisterActionPerformed(evt);
+            }
+        });
+        jPanel1.add(agregarRegister, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 520, 260, 40));
 
         ImagenFondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/fondo_clientes.jpg"))); // NOI18N
         jPanel1.add(ImagenFondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1140, 750));
@@ -492,6 +526,64 @@ public class VentanaPersonal extends javax.swing.JDialog {
             System.err.println("Error, " + ex);
         }
     }//GEN-LAST:event_btn_eliminarActionPerformed
+
+    private void agregarRegisterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agregarRegisterActionPerformed
+        Personal personal = new Personal();
+        ControladorPersonal ctlPersonal = new ControladorPersonal();
+
+        String contraseña = new String(cajaContraseña.getPassword());
+        String confirmarContraseña = new String(cajaConfirmarContraseña.getPassword());
+
+        Date date = SeleccionarFechar.getDate();
+        long d = date.getTime();
+        java.sql.Date fecha = new java.sql.Date(d);
+
+        if (CajaUsuario.getText().equals("") || contraseña.equals("") || confirmarContraseña.equals("") || cajaNombre.getText().equals("") || cajaCorreo.getText().equals("") || cajaSalario.getText().equals("")) {
+            JOptionPane.showMessageDialog(null, "Porfavor rellene todos los campos");
+        } else {
+            if (contraseña.equals(confirmarContraseña)) {
+
+                if (ctlPersonal.verificarUsuario(CajaUsuario.getText()) == 0) {
+
+                    if (ctlPersonal.comprobarEmail(cajaCorreo.getText())) {
+                        String nuevaContraseña = CifrarContraseña.md5(contraseña);
+                        personal.setNAtendedor(Integer.parseInt(cajaNAtendedor.getText()));
+                        personal.setNombreUsuario(CajaUsuario.getText());
+                        personal.setContraseña(nuevaContraseña);
+                        personal.setNombre(cajaNombre.getText());
+                        personal.setCorreo(cajaCorreo.getText());
+                        personal.setFechaIngreso(fecha);
+                        personal.setIdTipo_usuario(Integer.parseInt(cajaCargo.getText()));
+                        personal.setSalario(Double.parseDouble(cajaSalario.getText()));
+                        
+                        //inicialimzamos el login con el constructor sin parametros para enviar los datos registrados con el user
+                        Login login = new Login(personal);
+                        login.setVisible(true);
+                        this.dispose();
+
+                        if (ctlPersonal.registrar(personal)) {
+                            JOptionPane.showMessageDialog(null, "Error al Registrar el Usuario");
+
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Registro Correcto");
+                            limpiarCajas();
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "El correo no es Correcto");
+                    }
+
+                } else {
+                    JOptionPane.showMessageDialog(null, "Ya existe un usuario con ese nombre");
+                }
+
+            } else {
+                JOptionPane.showMessageDialog(null, "Las contraseñas no coinciden");
+            }
+        }
+        cajaContraseña.setVisible(true);
+        casillaContraAntigua.setVisible(true);
+        cajaNAtendedor.setEditable(true);
+    }//GEN-LAST:event_agregarRegisterActionPerformed
 //Limpiar las cajas
 
     private void limpiarCajas() {
@@ -593,6 +685,7 @@ public class VentanaPersonal extends javax.swing.JDialog {
     public javax.swing.JTextField CajaUsuario;
     private javax.swing.JLabel ImagenFondo;
     public com.toedter.calendar.JDateChooser SeleccionarFechar;
+    private javax.swing.JButton agregarRegister;
     private javax.swing.JButton btn_actualizar;
     private javax.swing.JButton btn_agregar;
     private javax.swing.JButton btn_eliminar;

@@ -1,10 +1,16 @@
-
+ 
 package vista;
 
-public class CuadrarCaja extends javax.swing.JFrame {
+import Modelo.Personal;
 
+public class CuadrarCaja extends javax.swing.JFrame {
+    Personal personal;
     public CuadrarCaja() {
         initComponents();
+    }
+    public CuadrarCaja(Personal personal) {
+        initComponents();
+        cajaTextoResponsable.setText(personal.getNombre());
     }
 
     @SuppressWarnings("unchecked")
@@ -36,7 +42,7 @@ public class CuadrarCaja extends javax.swing.JFrame {
         jLabel23 = new javax.swing.JLabel();
         jLabel24 = new javax.swing.JLabel();
         jLabel25 = new javax.swing.JLabel();
-        jLabel26 = new javax.swing.JLabel();
+        cajaTextoResponsable = new javax.swing.JLabel();
         jLabel27 = new javax.swing.JLabel();
         jLabel28 = new javax.swing.JLabel();
         jLabel29 = new javax.swing.JLabel();
@@ -76,71 +82,23 @@ public class CuadrarCaja extends javax.swing.JFrame {
         jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel10.setText("$ 20.000  :");
 
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
-            }
-        });
-
         jLabel11.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel11.setText("$ 10.000  :");
-
-        jTextField2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField2ActionPerformed(evt);
-            }
-        });
 
         jLabel12.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel12.setText("$ 5.000  :");
 
-        jTextField3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField3ActionPerformed(evt);
-            }
-        });
-
         jLabel13.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel13.setText("$ 2.000  :");
-
-        jTextField4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField4ActionPerformed(evt);
-            }
-        });
 
         jLabel14.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel14.setText("$ 1.000  :");
 
-        jTextField5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField5ActionPerformed(evt);
-            }
-        });
-
         jLabel15.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel15.setText("$ 500  :");
 
-        jTextField6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField6ActionPerformed(evt);
-            }
-        });
-
-        jTextField7.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField7ActionPerformed(evt);
-            }
-        });
-
         jLabel16.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel16.setText("$ 100  :");
-
-        jTextField8.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField8ActionPerformed(evt);
-            }
-        });
 
         jLabel17.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel17.setText("$ 50  :");
@@ -148,20 +106,8 @@ public class CuadrarCaja extends javax.swing.JFrame {
         jLabel18.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel18.setText("$ 10  :");
 
-        jTextField9.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField9ActionPerformed(evt);
-            }
-        });
-
         jLabel19.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel19.setText("TOTAL EFECTIVO");
-
-        jTextField10.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField10ActionPerformed(evt);
-            }
-        });
 
         jLabel23.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel23.setText("EMPRESA :");
@@ -171,7 +117,7 @@ public class CuadrarCaja extends javax.swing.JFrame {
         jLabel25.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel25.setText("NOMBRE RESPONSABLE :");
 
-        jLabel26.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        cajaTextoResponsable.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
 
         jLabel27.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel27.setText("FECHA :");
@@ -183,20 +129,8 @@ public class CuadrarCaja extends javax.swing.JFrame {
         jLabel30.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel30.setText("HORA :");
 
-        jTextField14.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField14ActionPerformed(evt);
-            }
-        });
-
         jLabel31.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel31.setText("$ 50.000  :");
-
-        jTextField15.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField15ActionPerformed(evt);
-            }
-        });
 
         jLabel32.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel32.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -210,12 +144,6 @@ public class CuadrarCaja extends javax.swing.JFrame {
         jLabel34.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel34.setText("CANTIDAD");
 
-        jTextField16.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField16ActionPerformed(evt);
-            }
-        });
-
         jLabel35.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel35.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel35.setText("Tarjeta Credito");
@@ -224,89 +152,29 @@ public class CuadrarCaja extends javax.swing.JFrame {
         jLabel36.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel36.setText("Tarjeta Debito");
 
-        jTextField17.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField17ActionPerformed(evt);
-            }
-        });
-
-        jTextField18.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField18ActionPerformed(evt);
-            }
-        });
-
         jLabel37.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel37.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel37.setText("Bonos");
-
-        jTextField19.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField19ActionPerformed(evt);
-            }
-        });
-
-        jTextField20.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField20ActionPerformed(evt);
-            }
-        });
 
         jLabel38.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel38.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel38.setText("Otros");
 
-        jTextField21.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField21ActionPerformed(evt);
-            }
-        });
-
-        jTextField22.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField22ActionPerformed(evt);
-            }
-        });
-
         jLabel39.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel39.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel39.setText("TOTAL OTROS MEDIOS");
-
-        jTextField23.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField23ActionPerformed(evt);
-            }
-        });
 
         jLabel40.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel40.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel40.setText("GRAN TOTAL");
 
-        jTextField24.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField24ActionPerformed(evt);
-            }
-        });
-
         jLabel41.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel41.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel41.setText("LECTURA CAJA");
 
-        jTextField25.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField25ActionPerformed(evt);
-            }
-        });
-
         jLabel42.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel42.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel42.setText("SOBRANTE O FALTANTE");
-
-        jTextField26.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField26ActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -322,7 +190,7 @@ public class CuadrarCaja extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(cajaTextoResponsable, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel27, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -452,7 +320,7 @@ public class CuadrarCaja extends javax.swing.JFrame {
                     .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel26, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cajaTextoResponsable, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -569,98 +437,6 @@ public class CuadrarCaja extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField10ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField10ActionPerformed
-
-    private void jTextField9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField9ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField9ActionPerformed
-
-    private void jTextField8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField8ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField8ActionPerformed
-
-    private void jTextField7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField7ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField7ActionPerformed
-
-    private void jTextField6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField6ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField6ActionPerformed
-
-    private void jTextField5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField5ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField5ActionPerformed
-
-    private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField4ActionPerformed
-
-    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField3ActionPerformed
-
-    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField2ActionPerformed
-
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
-
-    private void jTextField14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField14ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField14ActionPerformed
-
-    private void jTextField15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField15ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField15ActionPerformed
-
-    private void jTextField16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField16ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField16ActionPerformed
-
-    private void jTextField17ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField17ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField17ActionPerformed
-
-    private void jTextField18ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField18ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField18ActionPerformed
-
-    private void jTextField19ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField19ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField19ActionPerformed
-
-    private void jTextField20ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField20ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField20ActionPerformed
-
-    private void jTextField21ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField21ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField21ActionPerformed
-
-    private void jTextField22ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField22ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField22ActionPerformed
-
-    private void jTextField23ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField23ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField23ActionPerformed
-
-    private void jTextField24ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField24ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField24ActionPerformed
-
-    private void jTextField25ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField25ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField25ActionPerformed
-
-    private void jTextField26ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField26ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField26ActionPerformed
-
     public static void main(String args[]) {
 
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -671,6 +447,7 @@ public class CuadrarCaja extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel cajaTextoResponsable;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -685,7 +462,6 @@ public class CuadrarCaja extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel25;
-    private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel29;

@@ -7,6 +7,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Connection;
 
+
+
 public class Categorias {
     private int idCategoria;
     private String nombre;
@@ -108,5 +110,7 @@ public class Categorias {
         }
         return vectorCategorias;
     }
+        
+    
     
 }

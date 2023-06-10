@@ -47,7 +47,7 @@ public class ControladorProducto {
                 
                 producto.setCodigoI(rs.getString("codigoI"));
                 producto.setNombre(rs.getString("nombre"));
-                producto.setPrecio(rs.getDouble("precio"));
+                producto.setPrecio(rs.getInt("precio"));
                 producto.setIdCategoria(rs.getInt("idCategoria"));
                 producto.setCantidad(rs.getInt("cantidad"));
                 producto.setStock(rs.getInt("stock"));
