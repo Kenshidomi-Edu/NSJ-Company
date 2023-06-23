@@ -1,6 +1,18 @@
 package vista;
 
+import ConexionBD.Conexion;
+import Controlador.ControladorVentas;
+import Modelo.Cliente;
+import Modelo.Personal;
+import Modelo.Producto;
+import Modelo.Ventas;
 import java.awt.Image;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Vector;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -9,38 +21,287 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.table.DefaultTableModel;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import java.awt.PopupMenu;
+import javax.swing.JOptionPane;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Connection;
 
 /**
  *
  * @author Ivan Jara
  */
 public class VentanaPago extends javax.swing.JFrame {
-    
+
     ButtonGroup botonGrupo = new ButtonGroup();
+    
+    public DefaultTableModel modeloTabla;
+    public Object[][] datosTabla;
 
     public VentanaPago() {
         initComponents();
     }
-
-    public VentanaPago(String texto) {
+    Personal personal;
+    public VentanaPago(Object[][] datosTabla, String texto, Personal personal) {
         initComponents();
         this.setLocationRelativeTo(null);
+        this.personal = personal;
         cajaSaldoTotal.setText(texto);
         cajaPago.setText(String.valueOf(0));
         cajaSubtotal.setText(texto);
         totalRedondeado.setText(texto);
-        cuadrarEntero(totalRedondeado);
-        
-        
+
+        double numero = Double.parseDouble(totalAEditar.getText());
+        modeloTabla = new DefaultTableModel();
+        modeloTabla.addColumn("Codigo");
+        modeloTabla.addColumn("Nombre");
+        modeloTabla.addColumn("Cantidad");
+        modeloTabla.addColumn("precio");
+        modeloTabla.addColumn("Stock");
+        modeloTabla.addColumn("Total Linea");
+        tablaPago.setModel(modeloTabla);
+
+        nombreUsuario.setText(String.valueOf(personal.getId()));
+
+        //cajaDescuento.setText(String.valueOf(5400));
         if (cajaDescuento.getText().equals(0)) {
             totalAEditar.setText(texto);
-            cuadrarEntero(totalRedondeado);
+            //redondear(totalRedondeado);
 
         } else {
             int descuento = Integer.parseInt(cajaDescuento.getText());
             int totalVenta = Integer.parseInt(texto);
             totalAEditar.setText(String.valueOf(totalVenta - descuento));
-            cuadrarEntero(totalRedondeado);
+            //redondear(totalRedondeado);
+        }
+        redondear(totalRedondeado);
+
+        for (Object[] columnData : datosTabla) {
+            modeloTabla.addRow(columnData);
+//            for (Object data : columnData) {
+//                // Aquí puedes utilizar los datos como desees, por ejemplo, imprimirlos en la consola
+//                
+//            }
+            //System.out.println(); // Salto de línea para cada columna
+        }
+
+    }
+
+    public void boleta() {
+        //Titulo
+
+        jTextPane1.setText("                  Supermercado NSJ Company \n");
+        jTextPane1.setText(jTextPane1.getText() + "                               568/Calama, \n ");
+        jTextPane1.setText(jTextPane1.getText() + "                             Victoria,Chile\n ");
+        jTextPane1.setText(jTextPane1.getText() + "                              569 82469858\n  ");
+        jTextPane1.setText(jTextPane1.getText() + "-------------------------------------------------------------\n ");
+        jTextPane1.setText(jTextPane1.getText() + "     Nombre\t              Cantidad              Precio\n ");
+        jTextPane1.setText(jTextPane1.getText() + "-------------------------------------------------------------\n ");
+
+        //agregar lista de productos
+        DefaultTableModel dt = (DefaultTableModel) tablaPago.getModel();
+
+        for (int i = 0; i < tablaPago.getRowCount(); i++) {
+
+            String nom = dt.getValueAt(i, 1).toString();
+            String cant = dt.getValueAt(i, 2).toString();
+            String prec = dt.getValueAt(i, 5).toString();
+
+            jTextPane1.setText(jTextPane1.getText() + " " + nom + "\t  " + cant + "\t  " + prec + " \n");
+        }
+//        for (Object[] fila : datosTabla) {
+//                String nom = String.valueOf(fila[1]);
+//                String cant = String.valueOf(fila[2]);
+//                String prec = String.valueOf(fila[5]);
+//
+//                jTextPane1.setText(jTextPane1.getText() + " " + nom + "\t  " + cant + "\t  " + prec + " \n");
+//                
+//            }
+        //Pie
+        jTextPane1.setText(jTextPane1.getText() + "-------------------------------------------------------------\n ");
+        jTextPane1.setText(jTextPane1.getText() + "Subtotal  :\t\t\t" + cajaSubtotal.getText() + "\n");
+        jTextPane1.setText(jTextPane1.getText() + "Iva       :\t\t\t" + txt_iva.getText() + "\n");//iva
+        jTextPane1.setText(jTextPane1.getText() + "Descuento :\t\t\t" + txt_desc.getText() + "\n");
+        jTextPane1.setText(jTextPane1.getText() + "-------------------------------------------------------------\n ");
+        jTextPane1.setText(jTextPane1.getText() + "Gran Total :\t\t\t" + totalAEditar.getText() + "\n");
+        jTextPane1.setText(jTextPane1.getText() + "Pago       :\t\t\t" + cajaPago.getText() + "\n");
+        jTextPane1.setText(jTextPane1.getText() + "Vuelto    :\t\t\t" + cajaVuelto.getText() + "\n");
+        jTextPane1.setText(jTextPane1.getText() + "-------------------------------------------------------------\n ");
+
+        //Date Time
+        Date dd = new Date();
+        SimpleDateFormat datef = new SimpleDateFormat("yyyy-mm-dd");
+        SimpleDateFormat timef = new SimpleDateFormat("yyyy-mm-dd");
+        String date = datef.format(dd);
+        String time = timef.format(dd);
+        jTextPane1.setText(jTextPane1.getText() + " Date :" + date + "\tTime :" + time + " \n");
+        jTextPane1.setText(jTextPane1.getText() + "*************************************************\n ");
+        jTextPane1.setText(jTextPane1.getText() + "\tGracias Por Tu Compra..!  \n ");
+        jTextPane1.setText(jTextPane1.getText() + "*************************************************\n ");
+        jTextPane1.setText(jTextPane1.getText() + "                Sofware By NSJ.Company  \n ");
+        jTextPane1.setText(jTextPane1.getText() + "          Contact : NSJCompany@gmail.com  \n ");
+
+    }
+
+    private void GenerarPdf() {
+        int numero = 1;
+        try {
+
+            FileOutputStream archivo;
+            File file = new File("src/pdf/factura-" + numero + ".pdf");
+            archivo = new FileOutputStream(file);
+            Document doc = new Document();
+            PdfWriter.getInstance(doc, archivo);
+            doc.open();
+            com.itextpdf.text.Image img = com.itextpdf.text.Image.getInstance("src/Imagenes/NSJCompany.jpeg");
+
+            Paragraph fecha = new Paragraph();
+            Font negrita = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD, BaseColor.BLUE);
+            Font azul = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD, BaseColor.BLACK);
+            fecha.add(Chunk.NEWLINE);
+            Date date = new Date();
+            fecha.add("Factura: 1\n" + "Fecha: " + new SimpleDateFormat("dd-mm-yyyy").format(date) + "\n\n");
+
+            PdfPTable Encabezado = new PdfPTable(4);
+            Encabezado.setWidthPercentage(100);
+            Encabezado.getDefaultCell().setBorder(0);
+            float[] ColumnaEncabezado = new float[]{20f, 30f, 70f, 40f};
+            Encabezado.setWidths(ColumnaEncabezado);
+            Encabezado.setHorizontalAlignment(Element.ALIGN_LEFT);
+
+            Encabezado.addCell(img);
+
+            String rut = "77.526.211-7";
+            String nom = "NSJ COMPANY";
+            String tel = "56 96123428";
+            String dir = "Caupolican 2345";
+            String ra = "FACTURA ELECTRONICA";
+
+            Encabezado.addCell("");
+            Encabezado.addCell("Rut: " + rut + "\n\nNombre: " + nom + "\n\nTelefono: " + tel + "\n\nDireccion: " + dir + "\n\nRazon: " + ra);
+            Encabezado.addCell(fecha);
+            doc.add(Encabezado);
+
+            Paragraph cli = new Paragraph();
+            cli.add(Chunk.NEWLINE);
+            cli.add("Datos de los clientes:" + "\n\n");
+            doc.add(cli);
+
+            PdfPTable tabla_cli = new PdfPTable(5);
+            tabla_cli.setWidthPercentage(100);
+            tabla_cli.getDefaultCell().setBorder(0);
+            float[] ColumnaCli = new float[]{30f, 30f, 30f, 40f, 65f};
+            tabla_cli.setWidths(ColumnaCli);
+            tabla_cli.setHorizontalAlignment(Element.ALIGN_LEFT);
+            PdfPCell cl1 = new PdfPCell(new Phrase("RUT", negrita));
+            PdfPCell cl2 = new PdfPCell(new Phrase("NOMBRE", negrita));
+            PdfPCell cl3 = new PdfPCell(new Phrase("TELEFONO", negrita));
+            PdfPCell cl4 = new PdfPCell(new Phrase("DIRECCIÓN", negrita));
+            PdfPCell cl5 = new PdfPCell(new Phrase("CORREO", negrita));
+            cl1.setBorder(0);
+            cl2.setBorder(0);
+            cl3.setBorder(0);
+            cl4.setBorder(0);
+            cl5.setBorder(0);
+            tabla_cli.addCell(cl1);
+            tabla_cli.addCell(cl2);
+            tabla_cli.addCell(cl3);
+            tabla_cli.addCell(cl4);
+            tabla_cli.addCell(cl5);
+
+            String rut_temporal = cajaClienteFactura.getText();
+            String nom_temporal = cajaNombre.getText() + " " + cajaApellido.getText();
+            String tel_temporal = cajaTelefono.getText();
+            String dir_temporal = cajaDireccion.getText();
+            String corr_temporal = cajaCorreo.getText();
+
+            tabla_cli.addCell(rut_temporal);
+            tabla_cli.addCell(nom_temporal);
+            tabla_cli.addCell(tel_temporal);
+            tabla_cli.addCell(dir_temporal);
+            tabla_cli.addCell(corr_temporal);
+
+            doc.add(tabla_cli);
+
+            doc.add(Chunk.NEWLINE);
+
+            Paragraph datosProductos = new Paragraph("Datos de los Productos:");
+            datosProductos.setFont(azul);
+            datosProductos.setAlignment(Element.ALIGN_LEFT);
+            doc.add(datosProductos);
+
+            doc.add(Chunk.NEWLINE);
+            // Crear la tabla de productos
+            PdfPTable tablaProductos = new PdfPTable(6);
+            tablaProductos.setWidthPercentage(100);
+            tablaProductos.setWidths(new float[]{140, 150, 50, 50, 50, 80});
+            tablaProductos.setHorizontalAlignment(Element.ALIGN_LEFT);
+
+            // Agregar encabezados de columna a la tabla
+            tablaProductos.addCell("Código de Barra");
+            tablaProductos.addCell("Descripción");
+            tablaProductos.addCell("Cant");
+            tablaProductos.addCell("Precio");
+            tablaProductos.addCell("%impto Adic");
+            tablaProductos.addCell("Valor");
+
+            // Recorrer los datos de la tabla y agregar cada fila a la tabla del PDF    
+            //agregar lista de productos
+            DefaultTableModel dt = (DefaultTableModel) tablaPago.getModel();
+            for (int i = 0; i < tablaPago.getRowCount(); i++) {
+
+                String codigoBarra = dt.getValueAt(i, 0).toString();
+                String descripcion = dt.getValueAt(i, 1).toString();
+                String cantidad = dt.getValueAt(i, 2).toString();
+                String precio = dt.getValueAt(i, 3).toString();
+                String stock = "0";
+                String totalLineas = dt.getValueAt(i, 5).toString();
+
+                tablaProductos.addCell(codigoBarra);
+                tablaProductos.addCell(descripcion);
+                tablaProductos.addCell(cantidad);
+                tablaProductos.addCell(precio);
+                tablaProductos.addCell(stock);
+                tablaProductos.addCell(totalLineas);
+            }
+
+            // Agregar la tabla de productos al documento
+            doc.add(tablaProductos);
+
+//            PdfPTable tabla_final = new PdfPTable(5);
+//            tabla_cli.setWidthPercentage(100);
+//            tabla_cli.getDefaultCell().setBorder(0);
+//            float[] Columnatotal = new float[]{30f, 30f, 30f, 40f, 65f};
+//            tabla_final.setWidths(Columnatotal);
+//            tabla_final.setHorizontalAlignment(Element.ALIGN_LEFT);
+//            DefaultTableModel modeloTabla1 = (DefaultTableModel) tablaPago1.getModel();
+//            
+//            String monto = "";
+//            String iva = "19% menos";
+//            String total = totalRedondeado.getText();
+//            String MetodoPago = "X verse";
+//            String vuelto =  cajaVuelto.getText();
+//            
+//            tabla_final.addCell("Metodo de Pago: "+MetodoPago+"\n\nMonto Neto: "+monto+"\n\nI.V.A 19%: "+iva+"\n\nTotal: "+total+"\n\nVuelto: "+vuelto);
+//            //Encabezado.addCell("Rut: " + rut + "\n\nNombre: " + nom + "\n\nTelefono: " + tel + "\n\nDireccion: " + dir + "\n\nRazon: " + ra);
+//             
+//
+//            doc.add(tabla_final);
+            doc.close();
+            archivo.close();
+
+        } catch (Exception e) {
+            System.out.println("ERROR: " + e);
         }
     }
 
@@ -51,8 +312,7 @@ public class VentanaPago extends javax.swing.JFrame {
         panel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jComboBox_cliente1 = new javax.swing.JComboBox<>();
-        jTextField2 = new javax.swing.JTextField();
+        cajaClienteFactura = new javax.swing.JTextField();
         jButton_busca_cliente = new javax.swing.JButton();
         jButton_Boleta = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
@@ -89,8 +349,22 @@ public class VentanaPago extends javax.swing.JFrame {
         botonEfectivo = new javax.swing.JToggleButton();
         botonTransbank = new javax.swing.JToggleButton();
         botonCupon = new javax.swing.JToggleButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTextPane1 = new javax.swing.JTextPane();
+        txt_desc = new javax.swing.JTextField();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tablaPago1 = new javax.swing.JTable();
+        txt_iva = new javax.swing.JTextField();
+        cajaTelefono = new javax.swing.JTextField();
+        cajaApellido = new javax.swing.JTextField();
+        cajaDireccion = new javax.swing.JTextField();
+        cajaCorreo = new javax.swing.JTextField();
+        cajaNombre = new javax.swing.JTextField();
         jLabel_wallpaper = new javax.swing.JLabel();
         imagenFondoVerde = new javax.swing.JLabel();
+        nombreUsuario = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
@@ -105,29 +379,35 @@ public class VentanaPago extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel3.setText("Cliente:");
-        panel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 80, -1));
+        panel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 50, 80, -1));
 
-        jComboBox_cliente1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jComboBox_cliente1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleeccione cliente:", "Item 2", "Item 3", "Item 4" }));
-        panel1.add(jComboBox_cliente1, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 40, 170, -1));
+        cajaClienteFactura.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        panel1.add(cajaClienteFactura, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 50, 150, -1));
 
-        jTextField2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        panel1.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 40, 150, -1));
-
-        jButton_busca_cliente.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jButton_busca_cliente.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
         jButton_busca_cliente.setText("Buscar");
-        panel1.add(jButton_busca_cliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 40, 80, -1));
+        panel1.add(jButton_busca_cliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 50, 120, -1));
 
         jButton_Boleta.setBackground(new java.awt.Color(255, 153, 0));
         jButton_Boleta.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
         jButton_Boleta.setForeground(new java.awt.Color(255, 255, 255));
         jButton_Boleta.setText("<html>Boleta</html>");
+        jButton_Boleta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_BoletaActionPerformed(evt);
+            }
+        });
         panel1.add(jButton_Boleta, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 590, 140, 110));
 
         jButton3.setBackground(new java.awt.Color(255, 153, 0));
         jButton3.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
         jButton3.setForeground(new java.awt.Color(255, 255, 255));
         jButton3.setText("<html>Factura</html>");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
         panel1.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 590, 140, 110));
 
         boton2k.setBackground(new java.awt.Color(255, 153, 0));
@@ -242,7 +522,7 @@ public class VentanaPago extends javax.swing.JFrame {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.Integer.class
+                java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
                 false, false
@@ -260,7 +540,7 @@ public class VentanaPago extends javax.swing.JFrame {
         tablaPago.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jScrollPane1.setViewportView(tablaPago);
 
-        panel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 240, 610, 90));
+        panel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1110, 540, 220, 90));
         panel1.add(cajaVuelto, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 400, 310, 40));
 
         botonAtras.setBackground(new java.awt.Color(0, 153, 102));
@@ -372,6 +652,61 @@ public class VentanaPago extends javax.swing.JFrame {
         });
         panel1.add(botonCupon, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 140, 140, 60));
 
+        jScrollPane2.setViewportView(jTextPane1);
+
+        panel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(1100, 170, 300, 280));
+        panel1.add(txt_desc, new org.netbeans.lib.awtextra.AbsoluteConstraints(1160, 460, 120, 30));
+
+        jLabel9.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        jLabel9.setText("Desc:");
+        panel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(1110, 470, -1, -1));
+
+        jLabel8.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        jLabel8.setText("Iva:");
+        panel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(1120, 510, -1, -1));
+
+        tablaPago1.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        tablaPago1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
+            },
+            new String [] {
+                "Forma de Pago", "Monto"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tablaPago1.setToolTipText("");
+        tablaPago1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jScrollPane3.setViewportView(tablaPago1);
+
+        panel1.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 240, 610, 90));
+
+        txt_iva.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        txt_iva.setText("19%");
+        panel1.add(txt_iva, new org.netbeans.lib.awtextra.AbsoluteConstraints(1160, 500, 120, 30));
+        panel1.add(cajaTelefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(1190, 650, 70, -1));
+        panel1.add(cajaApellido, new org.netbeans.lib.awtextra.AbsoluteConstraints(1110, 680, 70, -1));
+        panel1.add(cajaDireccion, new org.netbeans.lib.awtextra.AbsoluteConstraints(1190, 680, 70, -1));
+        panel1.add(cajaCorreo, new org.netbeans.lib.awtextra.AbsoluteConstraints(1270, 650, 60, -1));
+        panel1.add(cajaNombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(1110, 650, 70, -1));
+
         jLabel_wallpaper.setBackground(new java.awt.Color(0, 204, 51));
         panel1.add(jLabel_wallpaper, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 0, 470, 750));
         jLabel_wallpaper.getAccessibleContext().setAccessibleName("Producto:");
@@ -380,11 +715,18 @@ public class VentanaPago extends javax.swing.JFrame {
         imagenFondoVerde.setBackground(new java.awt.Color(204, 204, 0));
         panel1.add(imagenFondoVerde, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 670, 750));
 
+        nombreUsuario.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
+        nombreUsuario.setForeground(new java.awt.Color(255, 255, 255));
+        nombreUsuario.setText("Usuario1");
+        panel1.add(nombreUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 90, -1, -1));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(panel1, javax.swing.GroupLayout.PREFERRED_SIZE, 1140, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(panel1, javax.swing.GroupLayout.PREFERRED_SIZE, 1408, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -430,7 +772,7 @@ public class VentanaPago extends javax.swing.JFrame {
         if (cajaPago.getText().equals(0)) {
             cajaPago.setText(String.valueOf(10000));
             calcularVuelto(cajaPago, cajaSaldoTotal);
-            cuadrarEntero(totalAEditar);
+            //redondear(totalRedondeado);
         } else {
             cajaPago.setText(String.valueOf(cajaPagoActual + 10000));
             calcularVuelto(cajaPago, cajaSaldoTotal);
@@ -509,39 +851,93 @@ public class VentanaPago extends javax.swing.JFrame {
 
     private void botonEfectivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonEfectivoActionPerformed
         JToggleButton button = (JToggleButton) evt.getSource();
-        DefaultTableModel modeloTabla = (DefaultTableModel) tablaPago.getModel();
+        DefaultTableModel modeloTabla1 = (DefaultTableModel) tablaPago1.getModel();
 
         if (button.isSelected()) {
             botonTransbank.setSelected(false);
             botonCupon.setSelected(false);
-            modeloTabla.setValueAt("Efectivo", 0, 0);
-            modeloTabla.setValueAt(totalRedondeado.getText(), 0, 1);
+            modeloTabla1.setValueAt("Efectivo", 0, 0);
+            modeloTabla1.setValueAt(totalRedondeado.getText(), 0, 1);
+        } else {
+            modeloTabla1.setValueAt("", 0, 0);
+            modeloTabla1.setValueAt("", 0, 1);
         }
     }//GEN-LAST:event_botonEfectivoActionPerformed
 
     private void botonTransbankActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonTransbankActionPerformed
         JToggleButton button = (JToggleButton) evt.getSource();
-        DefaultTableModel modeloTabla = (DefaultTableModel) tablaPago.getModel();
-
+        DefaultTableModel modeloTabla1 = (DefaultTableModel) tablaPago1.getModel();
         if (button.isSelected()) {
             botonEfectivo.setSelected(false);
             botonCupon.setSelected(false);
-            modeloTabla.setValueAt("Transbank", 0, 0);
-            modeloTabla.setValueAt(totalRedondeado.getText(), 0, 1);
+            modeloTabla1.setValueAt("Transbank", 0, 0);
+            modeloTabla1.setValueAt(totalRedondeado.getText(), 0, 1);
+        } else {
+            modeloTabla1.setValueAt("", 0, 0);
+            modeloTabla1.setValueAt("", 0, 1);
         }
     }//GEN-LAST:event_botonTransbankActionPerformed
 
     private void botonCuponActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonCuponActionPerformed
         JToggleButton button = (JToggleButton) evt.getSource();
-        DefaultTableModel modeloTabla = (DefaultTableModel) tablaPago.getModel();
+        DefaultTableModel modeloTabla1 = (DefaultTableModel) tablaPago1.getModel();
 
         if (button.isSelected()) {
             botonEfectivo.setSelected(false);
             botonTransbank.setSelected(false);
-            modeloTabla.setValueAt("Cupon", 0, 0);
-            modeloTabla.setValueAt(totalRedondeado.getText(), 0, 1);
+            modeloTabla1.setValueAt("Cupon", 0, 0);
+            modeloTabla1.setValueAt(totalRedondeado.getText(), 0, 1);
+        } else {
+            modeloTabla1.setValueAt("", 0, 0);
+            modeloTabla1.setValueAt("", 0, 1);
         }
     }//GEN-LAST:event_botonCuponActionPerformed
+
+    private void jButton_BoletaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_BoletaActionPerformed
+        boleta();
+        //imprimir
+        try {
+            jTextPane1.print();
+
+        } catch (Exception e) {
+        }
+    }//GEN-LAST:event_jButton_BoletaActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        Cliente cliente = new Cliente();
+        ControladorVentas ctlVentas = new ControladorVentas();
+        Ventas ventas = new Ventas();
+        
+        
+        if (cajaClienteFactura.getText().equals("")) {
+            JOptionPane.showMessageDialog(null, "Ingrese Rut del cliente");
+        } else {
+            if (tablaPago == null) {
+                JOptionPane.showMessageDialog(null, "LA TABLA ESTA VACÍA");
+            } else {
+
+                cliente.setRut(cajaClienteFactura.getText());
+                if (ctlVentas.buscarCliente(cliente)) {
+                    cajaClienteFactura.setText(cliente.getRut());
+                    cajaNombre.setText(cliente.getNombre());
+                    cajaApellido.setText(cliente.getApellido());
+                    cajaTelefono.setText(String.valueOf(cliente.getTelefono()));
+                    cajaDireccion.setText(cliente.getDireccion());
+                    cajaCorreo.setText(cliente.getCorreo());
+
+                    JOptionPane.showMessageDialog(null, "FACTURA CREADA");
+                    GenerarPdf();
+                    ventas.setIdPersonal(Integer.parseInt(nombreUsuario.getText()));
+                    ventas.setIdTipoDeDocumento(2);
+                    ventas.setIdProducto(HIDE_ON_CLOSE);
+                } else {
+                    JOptionPane.showMessageDialog(null, "cago");
+                }
+            }
+        }
+
+
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -578,16 +974,6 @@ public class VentanaPago extends javax.swing.JFrame {
         });
     }
 
-    public Icon setIcono(String url, JButton boton) {
-        ImageIcon icon = new ImageIcon(getClass().getResource(url));
-
-        int ancho = boton.getWidth();
-        int alto = boton.getHeight();
-
-        ImageIcon icono = new ImageIcon(icon.getImage().getScaledInstance(ancho, alto, Image.SCALE_DEFAULT));
-        return icono;
-    }
-
     public void calcularVuelto(JTextField caja1, JTextField caja2) {
         int num1 = Integer.parseInt(caja1.getText());
         int num2 = Integer.parseInt(caja2.getText());
@@ -597,13 +983,57 @@ public class VentanaPago extends javax.swing.JFrame {
         cajaVuelto.setText(String.valueOf(total));
     }
 
-    public void cuadrarEntero(JLabel label) {
+    public static int redondear(JLabel label) {
         String texto = label.getText();
-        double numero = Double.parseDouble(texto);
-        long numeroRedondeado = Math.round(numero);
-        String textoRedondeado = String.valueOf(numeroRedondeado);
-        label.setText(textoRedondeado);
+
+        int redondeado;
+        if (!texto.isEmpty() && texto.length() > 0) {
+            int ultimoCaracter = texto.charAt(texto.length() - 1);
+            if (Character.isDigit(ultimoCaracter)) {
+                int numero = Character.getNumericValue(ultimoCaracter);
+                if (numero > 5) {
+                    redondeado = (int) Math.ceil(numero);
+                    redondeado = redondeado + 2;
+                    System.err.println("ariba" + redondeado);
+                } else {
+                    redondeado = (int) Math.floor(numero);
+                    System.err.println("holi" + redondeado);
+                }
+            }
+        }
+        //label.setText(String.valueOf(numero));
+        // Si no se encontró un número, puedes retornar un valor por defecto o lanzar una excepción
+        return -1;
     }
+    
+    public static void obtenerIDsPorNombre(Producto producto) {
+            Conexion con = new Conexion();
+            
+        try {
+            Connection conexion = con.getconectar();
+            PreparedStatement ps = null;
+            ResultSet rs = null;
+            // Construir y ejecutar la consulta SQL
+            
+            ps = conexion.prepareStatement("SELECT id FROM tabla WHERE codigoI=?");
+            ps.setString(1, producto.getCodigoI());
+            rs= ps.executeQuery();
+
+            // Recorrer los resultados y mostrar los IDs obtenidos
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                System.out.println("ID: " + id);
+            }
+
+            // Cerrar conexiones y recursos
+            rs.close();
+            ps.close();
+            conexion.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -622,16 +1052,21 @@ public class VentanaPago extends javax.swing.JFrame {
     private javax.swing.JButton botonPagoJusto;
     private javax.swing.JButton botonQuitar;
     private javax.swing.JToggleButton botonTransbank;
+    private javax.swing.JTextField cajaApellido;
+    private javax.swing.JTextField cajaClienteFactura;
+    private javax.swing.JTextField cajaCorreo;
     private javax.swing.JLabel cajaDescuento;
+    private javax.swing.JTextField cajaDireccion;
+    private javax.swing.JTextField cajaNombre;
     private javax.swing.JTextField cajaPago;
     private javax.swing.JTextField cajaSaldoTotal;
     private javax.swing.JLabel cajaSubtotal;
+    private javax.swing.JTextField cajaTelefono;
     private javax.swing.JTextField cajaVuelto;
     private javax.swing.JLabel imagenFondoVerde;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton_Boleta;
     private javax.swing.JButton jButton_busca_cliente;
-    private javax.swing.JComboBox<String> jComboBox_cliente1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
@@ -640,16 +1075,24 @@ public class VentanaPago extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel jLabel_wallpaper;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
-    private javax.swing.JTextField jTextField2;
+    private javax.swing.JTextPane jTextPane1;
+    private javax.swing.JLabel nombreUsuario;
     private javax.swing.JPanel panel1;
     private javax.swing.JTable tablaPago;
+    private javax.swing.JTable tablaPago1;
     private javax.swing.JLabel totalAEditar;
     private javax.swing.JLabel totalRedondeado;
+    private javax.swing.JTextField txt_desc;
+    private javax.swing.JTextField txt_iva;
     // End of variables declaration//GEN-END:variables
 
     //metodo para  cargar los clientes en el jCombobox 

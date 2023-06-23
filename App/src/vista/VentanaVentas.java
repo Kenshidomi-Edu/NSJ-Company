@@ -4,10 +4,13 @@ import ConexionBD.Conexion;
 import Controlador.ControladorVentas;
 import Modelo.Personal;
 import Modelo.Producto;
+import Modelo.Ventas;
 import java.awt.event.KeyEvent;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
@@ -21,7 +24,7 @@ public class VentanaVentas extends javax.swing.JFrame {
 
     Producto producto = new Producto();
     ControladorVentas controladorVentas = new ControladorVentas();
-
+    Personal personal;
     public VentanaVentas() {
         initComponents();
     }
@@ -29,7 +32,7 @@ public class VentanaVentas extends javax.swing.JFrame {
     public VentanaVentas(Personal personal) {
         initComponents();
         setLocationRelativeTo(null);
-
+        this.personal = personal;
         DefaultTableModel modeloTabla = new DefaultTableModel();
         tablaVentas.setModel(modeloTabla);
         modeloTabla.addColumn("Codigo");
@@ -41,9 +44,20 @@ public class VentanaVentas extends javax.swing.JFrame {
 
         nombreUsuario.setText(personal.getNombre());
         cajaIVA.setText("19%");
-        
-        
 
+    }
+    
+    public Object[][] obtenerDatosTabla() {
+        DefaultTableModel model = (DefaultTableModel) tablaVentas.getModel();
+        int rowCount = model.getRowCount();
+        int columnCount = model.getColumnCount();
+        Object[][] data = new Object[rowCount][columnCount];
+        for (int i = 0; i < rowCount; i++) {
+            for (int j = 0; j < columnCount; j++) {
+                data[i][j] = model.getValueAt(i, j);
+            }
+        }
+        return data;
     }
 
     @SuppressWarnings("unchecked")
@@ -204,6 +218,11 @@ public class VentanaVentas extends javax.swing.JFrame {
 
         botonDescuento.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
         botonDescuento.setText("Descuento");
+        botonDescuento.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonDescuentoActionPerformed(evt);
+            }
+        });
         panel.add(botonDescuento, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 610, 180, 70));
 
         botonX.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
@@ -281,9 +300,14 @@ public class VentanaVentas extends javax.swing.JFrame {
 
     private void botonPagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonPagarActionPerformed
         String texto = cajaTotal.getText();
-        VentanaPago ventanaP = new VentanaPago(texto);
+        this.personal = personal;
+        Object[][] datosTabla = obtenerDatosTabla();
+        //String personal = nombreUsuario.getText();
+        
+        VentanaPago ventanaP = new VentanaPago(datosTabla, texto, personal);
+        
         ventanaP.setVisible(true);
-
+        //ventanaP.setSize(1120, 780);
     }//GEN-LAST:event_botonPagarActionPerformed
 
     private void botonIrAMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonIrAMenuActionPerformed
@@ -297,7 +321,7 @@ public class VentanaVentas extends javax.swing.JFrame {
     }//GEN-LAST:event_botonXActionPerformed
 
     private void botonBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonBuscarActionPerformed
-        DefaultTableModel modeloTabla = new DefaultTableModel();
+        //DefaultTableModel modeloTabla = new DefaultTableModel();
         String codigoBarras = cajaIngresoProducto.getText();
         int posicionAsterisco = codigoBarras.indexOf("*");
         int posicionResta = codigoBarras.indexOf("-");
@@ -308,20 +332,19 @@ public class VentanaVentas extends javax.swing.JFrame {
         } else if (posicionAsterisco != -1) {
             agregarProductoATablaX();
             multiplicarColumnas(tablaVentas, 2, 3, 5);
-            multiplicarLineaCompleta(tablaVentas,cajaTotal);
-            subtotal(tablaVentas,cajaTotalNeto);
-            
+            multiplicarLineaCompleta(tablaVentas, cajaTotal);
+            subtotal(tablaVentas, cajaTotalNeto);
 
         } else if (posicionResta != -1) {
             restarProductoATabla();
             multiplicarColumnas(tablaVentas, 2, 3, 5);
-            multiplicarLineaCompleta(tablaVentas,cajaTotal);
-            subtotal(tablaVentas,cajaTotalNeto);
+            multiplicarLineaCompleta(tablaVentas, cajaTotal);
+            subtotal(tablaVentas, cajaTotalNeto);
         } else {
             agregarProductoATabla();
             multiplicarColumnas(tablaVentas, 2, 3, 5);
-            multiplicarLineaCompleta(tablaVentas,cajaTotal);
-            subtotal(tablaVentas,cajaTotalNeto);
+            multiplicarLineaCompleta(tablaVentas, cajaTotal);
+            subtotal(tablaVentas, cajaTotalNeto);
         }
 
 
@@ -407,6 +430,10 @@ public class VentanaVentas extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_tablaVentasKeyPressed
 
+    private void botonDescuentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonDescuentoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_botonDescuentoActionPerformed
+
     public void agregarProductoATabla() {
         //DefaultTableModel modeloTabla = new DefaultTableModel();
         DefaultTableModel modeloTabla = (DefaultTableModel) tablaVentas.getModel();
@@ -431,7 +458,7 @@ public class VentanaVentas extends javax.swing.JFrame {
             }
 
             // Preparar la consulta
-            ps = conexion.prepareStatement("select codigoI,nombre,precio,stock from producto" + where);
+            ps = conexion.prepareStatement("select idProducto,codigoI,nombre,precio,stock from producto" + where);
             // Ejecutar la consulta
             rs = ps.executeQuery();
 
@@ -515,7 +542,7 @@ public class VentanaVentas extends javax.swing.JFrame {
             Connection conexion = con.getconectar();
 
             // Preparar la consulta
-            ps = conexion.prepareStatement("select codigoI,nombre,precio,stock from producto where codigoI='" + codigoI + "'");
+            ps = conexion.prepareStatement("select idProducto,codigoI,nombre,precio,stock from producto where codigoI='" + codigoI + "'");
             // Ejecutar la consulta
             rs = ps.executeQuery();
 
@@ -808,13 +835,13 @@ public class VentanaVentas extends javax.swing.JFrame {
             Object valor2 = model.getValueAt(fila, columna2);
 
             if (valor1 instanceof Number && valor2 instanceof Number) {
-                int resultado = ((Number) valor1).intValue()* ((Number) valor2).intValue();
+                int resultado = ((Number) valor1).intValue() * ((Number) valor2).intValue();
                 model.setValueAt(resultado, fila, columnaResultado);
             }
         }
     }
 
-    public static void multiplicarLineaCompleta(JTable table,JTextField texto) {
+    public static void multiplicarLineaCompleta(JTable table, JTextField texto) {
         int columna = 5;
         int suma = 0;
 
@@ -825,7 +852,8 @@ public class VentanaVentas extends javax.swing.JFrame {
 
         texto.setText(String.valueOf(suma));
     }
-    public static void subtotal(JTable table,JTextField totalneto) {
+
+    public static void subtotal(JTable table, JTextField totalneto) {
         int columna = 5;
         int suma = 0;
 
@@ -835,34 +863,33 @@ public class VentanaVentas extends javax.swing.JFrame {
         }
 
         //total.setText(String.valueOf(suma));
-        
         int rescatando = suma;
         int descuento = (int) (rescatando * (19.0 / 100));
         int resultado = rescatando - descuento;
         totalneto.setText(String.valueOf(resultado));
     }
-    
+
     public String formatearPesosChilenos(String numero) {
-    // Remover cualquier punto existente en el número
-    numero = numero.replace(".", "");
+        // Remover cualquier punto existente en el número
+        numero = numero.replace(".", "");
 
-    // Verificar si el número tiene más de 3 dígitos
-    if (numero.length() > 3) {
-        // Calcular la cantidad de puntos necesarios para separar los miles
-        int puntos = (numero.length() - 1) / 3;
+        // Verificar si el número tiene más de 3 dígitos
+        if (numero.length() > 3) {
+            // Calcular la cantidad de puntos necesarios para separar los miles
+            int puntos = (numero.length() - 1) / 3;
 
-        // Insertar los puntos en la posición adecuada
-        for (int i = 1; i <= puntos; i++) {
-            int posicion = numero.length() - (i * 3);
-            numero = numero.substring(0, posicion) + "." + numero.substring(posicion);
+            // Insertar los puntos en la posición adecuada
+            for (int i = 1; i <= puntos; i++) {
+                int posicion = numero.length() - (i * 3);
+                numero = numero.substring(0, posicion) + "." + numero.substring(posicion);
+            }
         }
+
+        // Agregar el símbolo de pesos al inicio
+        numero = "$" + numero;
+
+        return numero;
     }
-
-    // Agregar el símbolo de pesos al inicio
-    numero = "$" + numero;
-
-    return numero;
-}
 
     /**
      * @param args the command line arguments

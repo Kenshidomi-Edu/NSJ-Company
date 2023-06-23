@@ -141,6 +141,8 @@ public class Login extends javax.swing.JFrame {
                 Menu menu = new Menu(personal);
                 VentanaVentas ventana = new VentanaVentas(personal);
                 CuadrarCaja cuadrarCaja = new CuadrarCaja(personal);
+                Object[][] datosTabla={};
+                //VentanaPago ventanaPago = new VentanaPago( personal);
                 menu.setVisible(true);
                 
                 

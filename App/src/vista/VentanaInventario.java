@@ -235,6 +235,11 @@ public class VentanaInventario extends javax.swing.JDialog {
                 FiltrarXComboItemStateChanged(evt);
             }
         });
+        FiltrarXCombo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                FiltrarXComboActionPerformed(evt);
+            }
+        });
         panel1.add(FiltrarXCombo, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 530, 170, 40));
 
         cajaBuscarXID.addActionListener(new java.awt.event.ActionListener() {
@@ -501,6 +506,13 @@ public class VentanaInventario extends javax.swing.JDialog {
             Logger.getLogger(VentanaInventario.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_botonImprimirActionPerformed
+
+    private void FiltrarXComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FiltrarXComboActionPerformed
+        
+        if(FiltrarXCombo.getSelectedIndex() == 0 ){
+            actualizarTabla();
+        }
+    }//GEN-LAST:event_FiltrarXComboActionPerformed
     public void actualizarTabla() {
         DefaultTableModel modeloTabla = new DefaultTableModel();
         tablaInverntario.setModel(modeloTabla);
