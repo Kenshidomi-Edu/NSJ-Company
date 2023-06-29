@@ -31,11 +31,6 @@ references `NSJCompany`.`tipo_usuario` (`id`)
 on delete no action
 on update no action);
 
-
-use nsjcompany;
-select * from personal;
-select * from tipo_usuario;
-
 CREATE TABLE `categoria` (
   `idCategoria` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(45) NOT NULL,
@@ -107,15 +102,6 @@ CREATE TABLE `union_pp` (
   ON UPDATE CASCADE
 );
 
-use nsjcompany;
-select * from personal;
-select * from categoria;
-select * from tipo_usuario;
-select * from producto;
-select * from cliente;
-select * from proveedores;
-select * from tipo_documento;
-
 select p.codigoI, p.nombre, p.precio, c.nombre as 'Categoria' ,p.cantidad, p.stock  from producto as p
 inner join categoria as c on p.idCategoria = c.idCategoria;
 
@@ -169,4 +155,12 @@ ADD CONSTRAINT `idCliente_fdk`
   ON DELETE CASCADE
   ON UPDATE CASCADE;
 
+use nsjcompany;
+select * from personal;
+select * from categoria;
+select * from tipo_usuario;
+select * from producto;
+select * from cliente;
+select * from proveedores;
+select * from tipo_documento;
 

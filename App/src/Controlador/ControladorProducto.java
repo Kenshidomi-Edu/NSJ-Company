@@ -29,7 +29,8 @@ public class ControladorProducto {
             ps.executeUpdate();
 
         return false;
-        } catch (Exception ex) {
+        } 
+        catch (Exception ex) {
             System.err.println("Error, " + ex);
             return false;
         } 
@@ -67,6 +68,61 @@ public class ControladorProducto {
                 System.err.println("Error, " + ex);
             }
         }
+    }
+    
+    public int obtenerStockProducto(String codigoProducto) {
+        Connection conexion = con.getconectar();
+        int stockActual = 0;
+       
+        try {
+            String query = "SELECT stock FROM producto WHERE codigoI = ?";
+            PreparedStatement ps = conexion.prepareStatement(query);
+            ps.setString(1, codigoProducto);
+            ResultSet rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                stockActual = rs.getInt("stock");
+            }
+            conexion.close();
+        } 
+        catch (Exception ex) {
+            System.err.println("Error, " + ex);
+        }
+        return stockActual;
+    }
+    
+     public boolean actualizarStockProducto(Producto producto) {
+        try {
+            Connection conexion = con.getconectar();
+            String query = "UPDATE producto SET stock = ? WHERE codigoI = ?";
+            PreparedStatement statement = conexion.prepareStatement(query);
+            statement.setInt(1, producto.getStock());
+            statement.setString(2, producto.getCodigoI());
+            int filasActualizadas = statement.executeUpdate();
+            conexion.close();
+            return filasActualizadas > 0;
+        } 
+        catch (Exception ex) {
+            System.err.println("Error, " + ex);
+        }
+        return false;
+    }
+     
+    public boolean existeProducto(String codigo) {
+        try {
+            Connection conexion = con.getconectar();
+            String query = "SELECT * FROM producto WHERE CodigoI = ?";
+            PreparedStatement statement = conexion.prepareStatement(query);
+            statement.setString(1, codigo);
+            ResultSet resultSet = statement.executeQuery();
+            boolean existe = resultSet.next();
+            conexion.close();
+            return existe;
+        } 
+        catch (Exception ex) {
+            System.err.println("Error, " + ex);
+        }
+        return false;
     }
 
     public boolean modificar(Producto producto) {

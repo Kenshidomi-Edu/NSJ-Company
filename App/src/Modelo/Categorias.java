@@ -76,8 +76,7 @@ public class Categorias {
         }
         return vectorCategorias;
     }
-    
-    
+     
     public Vector<Categorias> mostrarCategoriasXtabla(){
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -110,7 +109,5 @@ public class Categorias {
         }
         return vectorCategorias;
     }
-        
-    
     
 }

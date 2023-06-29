@@ -2,8 +2,11 @@ package vista;
 
 import ConexionBD.Conexion;
 import Controlador.ControladorProducto;
+import Controlador.ControladorUnionPP;
 import Modelo.Categorias;
 import Modelo.Producto;
+import Modelo.Proveedores;
+import Modelo.UnionPP;
 import Reportes.Excel;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,13 +23,23 @@ import javax.swing.table.DefaultTableModel;
 public class VentanaInventario extends javax.swing.JDialog {
 
     Categorias categoria = new Categorias();
+    Proveedores proveedor = new Proveedores();
+    
+    ControladorUnionPP controlador_union = new ControladorUnionPP();
+    
 
     public VentanaInventario(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        if (modal) {
+            
+        }
         setLocationRelativeTo(null);
         etiquetaNumeroTabla.setVisible(false);
         cajaNumeros.setVisible(false);
+        etiquetaPrecio.setVisible(false);
+        cajaStock.setVisible(false);
+        botonEditar.setVisible(false);
         actualizarTabla();
 
         DefaultComboBoxModel modeloCombo2 = new DefaultComboBoxModel(categoria.mostrarCategorias());
@@ -35,7 +48,8 @@ public class VentanaInventario extends javax.swing.JDialog {
         DefaultComboBoxModel modeloCombo4 = new DefaultComboBoxModel(categoria.mostrarCategoriasXtabla());
         FiltrarXCombo.setModel(modeloCombo4);
        
-        
+        DefaultComboBoxModel modeloCombo6 = new DefaultComboBoxModel(proveedor.mostrarProveedores());
+        combo_proveedores.setModel(modeloCombo6);
     }
 
     @SuppressWarnings("unchecked")
@@ -62,6 +76,8 @@ public class VentanaInventario extends javax.swing.JDialog {
         etiquetaPrecio2 = new javax.swing.JLabel();
         comboCategoria = new javax.swing.JComboBox<>();
         botonEditar = new javax.swing.JButton();
+        etiquetaDescripcion1 = new javax.swing.JLabel();
+        combo_proveedores = new javax.swing.JComboBox<>();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaInverntario = new javax.swing.JTable();
         botonEliminar = new javax.swing.JButton();
@@ -98,8 +114,8 @@ public class VentanaInventario extends javax.swing.JDialog {
 
         etiquetaDescripcion.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
         etiquetaDescripcion.setForeground(new java.awt.Color(255, 255, 255));
-        etiquetaDescripcion.setText("Cantidad:");
-        panel2.add(etiquetaDescripcion, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 300, -1, -1));
+        etiquetaDescripcion.setText("Proveedores:");
+        panel2.add(etiquetaDescripcion, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 360, -1, -1));
 
         etiquetaCodigo.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
         etiquetaCodigo.setForeground(new java.awt.Color(255, 255, 255));
@@ -114,10 +130,10 @@ public class VentanaInventario extends javax.swing.JDialog {
         etiquetaPrecio.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
         etiquetaPrecio.setForeground(new java.awt.Color(255, 255, 255));
         etiquetaPrecio.setText("Stock:");
-        panel2.add(etiquetaPrecio, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 350, -1, -1));
+        panel2.add(etiquetaPrecio, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 420, -1, 20));
 
         cajaStock.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        panel2.add(cajaStock, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 340, 140, 40));
+        panel2.add(cajaStock, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 410, 140, 40));
 
         cajaNumeros.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         panel2.add(cajaNumeros, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 30, 50, 30));
@@ -140,7 +156,7 @@ public class VentanaInventario extends javax.swing.JDialog {
                 botonGuardarActionPerformed(evt);
             }
         });
-        panel2.add(botonGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 400, 130, 50));
+        panel2.add(botonGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 470, 130, 50));
 
         etiquetaPrecio1.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
         etiquetaPrecio1.setForeground(new java.awt.Color(255, 255, 255));
@@ -168,9 +184,23 @@ public class VentanaInventario extends javax.swing.JDialog {
                 botonEditarActionPerformed(evt);
             }
         });
-        panel2.add(botonEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 400, 120, 50));
+        panel2.add(botonEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 470, 120, 50));
 
-        panel1.add(panel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 120, 340, 480));
+        etiquetaDescripcion1.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
+        etiquetaDescripcion1.setForeground(new java.awt.Color(255, 255, 255));
+        etiquetaDescripcion1.setText("Cantidad:");
+        panel2.add(etiquetaDescripcion1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 300, -1, -1));
+
+        combo_proveedores.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
+        combo_proveedores.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "--Seleccione--", " " }));
+        combo_proveedores.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                combo_proveedoresActionPerformed(evt);
+            }
+        });
+        panel2.add(combo_proveedores, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 360, 170, -1));
+
+        panel1.add(panel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 120, 340, 570));
 
         tablaInverntario.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         tablaInverntario.setModel(new javax.swing.table.DefaultTableModel(
@@ -259,11 +289,6 @@ public class VentanaInventario extends javax.swing.JDialog {
         panel1.add(botonBuscarXID, new org.netbeans.lib.awtextra.AbsoluteConstraints(820, 80, 120, 50));
 
         imagenFondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/fondo_clientes.jpg"))); // NOI18N
-        imagenFondo.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                imagenFondoMouseClicked(evt);
-            }
-        });
         panel1.add(imagenFondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1150, 750));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -285,35 +310,79 @@ public class VentanaInventario extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void botonGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonGuardarActionPerformed
+
         Producto producto = new Producto();
-        ControladorProducto ctlrPrododucto = new ControladorProducto();
+        ControladorProducto ctlrProducto = new ControladorProducto();
+        UnionPP union_pp = new UnionPP();
+        ControladorUnionPP ctrl_union_pp = new ControladorUnionPP();
 
         int seleccionCombo = comboCategoria.getSelectedIndex();
-        String cajita = cajaCodigo.getText();
+        int seleccion_proveedores = combo_proveedores.getSelectedIndex();
 
-        if (cajaNombre.getText().equals("") || cajaPrecio.getText().equals("") || cajaCantidad.getText().equals("") || cajaStock.getText().equals("")) {
+        if (cajaNombre.getText().isEmpty() || cajaPrecio.getText().isEmpty() || cajaCantidad.getText().isEmpty()) {
             JOptionPane.showMessageDialog(null, "Rellene los campos");
-        } else {
-            if (seleccionCombo == 0) {
-                JOptionPane.showMessageDialog(null, "Escoja una categoria");
-            } else {
-                producto.setCodigoI(cajaCodigo.getText());
-                producto.setNombre(cajaNombre.getText());
-                producto.setPrecio(Integer.parseInt(cajaPrecio.getText()));
-                producto.setIdCategoria(seleccionCombo);
-                producto.setCantidad(Integer.parseInt(cajaCantidad.getText()));
-                producto.setStock(Integer.parseInt(cajaStock.getText()));
-                producto.setNombreCategoria(FiltrarXCombo.toString());
-                if (ctlrPrododucto.insertar(producto)) {
-                    JOptionPane.showMessageDialog(null, "no se ah insertado");
-                    actualizarTabla();
+        } else if (seleccionCombo == 0) {
+            JOptionPane.showMessageDialog(null, "Escoja una categoría");
+        } 
+        else {
+            String codigo = cajaCodigo.getText();
+            int nuevaCantidad = Integer.parseInt(cajaCantidad.getText());
+
+            producto.setCodigoI(codigo);
+            producto.setNombre(cajaNombre.getText());
+            producto.setPrecio(Integer.parseInt(cajaPrecio.getText()));
+            producto.setIdCategoria(seleccionCombo);
+            producto.setCantidad(nuevaCantidad);
+            producto.setNombreCategoria(FiltrarXCombo.toString());
+            
+            union_pp.setId_producto(1);
+            union_pp.setId_proveedores(seleccion_proveedores);
+            
+            try {
+                if (ctrl_union_pp.insertar(union_pp)) {
+                    JOptionPane.showMessageDialog(null, "Proveedor insertado");
+                }
+                else {
+                    JOptionPane.showMessageDialog(null, "No se ha insertado el proveedor");
+                }
+            } 
+            catch (Exception ex) {
+                System.err.println("ERROR: " +ex);
+            }
+            
+            int stockActual = ctlrProducto.obtenerStockProducto(codigo);
+            int nuevoStock = stockActual + nuevaCantidad;
+            producto.setStock(nuevoStock);
+
+            if (stockActual == 0) {
+                // El producto no existe en la base de datos, realizar la inserción
+                if (ctlrProducto.insertar(producto)) {
+                    JOptionPane.showMessageDialog(null, "No se ha insertado el registro");
                 } else {
                     JOptionPane.showMessageDialog(null, "Registro Insertado");
-                    actualizarTabla();
-                    limpiarCajas();
+                }
+            } else {
+                // El producto ya existe en la base de datos, realizar la actualización
+                if (ctlrProducto.existeProducto(codigo)) {
+                    if (ctlrProducto.actualizarStockProducto(producto)) {
+                        JOptionPane.showMessageDialog(null, "Stock actualizado");
+                    } 
+                    else {
+                        JOptionPane.showMessageDialog(null, "No se ha actualizado el stock");
+                    }
+                } 
+                else {
+                    // El producto no existe en la base de datos, realizar la inserción
+                    if (ctlrProducto.insertar(producto)) {
+                        JOptionPane.showMessageDialog(null, "No se ha insertado el registro");
+                    } 
+                    else {
+                        JOptionPane.showMessageDialog(null, "Registro Insertado");
+                    }
                 }
             }
-
+            actualizarTabla();
+            limpiarCajas();
         }
     }//GEN-LAST:event_botonGuardarActionPerformed
 
@@ -368,8 +437,6 @@ public class VentanaInventario extends javax.swing.JDialog {
                 System.err.println("Error, " + ex);
             }
         }
-
-
     }//GEN-LAST:event_FiltrarXComboItemStateChanged
 
     private void botonLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonLimpiarActionPerformed
@@ -380,7 +447,7 @@ public class VentanaInventario extends javax.swing.JDialog {
     private void tablaInverntarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaInverntarioMouseClicked
         PreparedStatement ps = null; //hacer la consulta a la base de Datos
         ResultSet rs = null;// Obtener el resultado de la busqueda de la consulta
-
+ 
         try {
             Conexion con = new Conexion();
             Connection conexion = con.getconectar();
@@ -391,7 +458,7 @@ public class VentanaInventario extends javax.swing.JDialog {
             ps = conexion.prepareStatement("select idProducto,codigoI,nombre,precio,idCategoria,cantidad,stock from producto where codigoI=?");
             ps.setString(1, codigo);
             rs = ps.executeQuery();
-
+            
             while (rs.next()) {
                 cajaNumeros.setText(String.valueOf(rs.getInt("idProducto")));
                 cajaCodigo.setText(rs.getString("codigoI"));
@@ -401,35 +468,47 @@ public class VentanaInventario extends javax.swing.JDialog {
                 cajaCantidad.setText(String.valueOf(rs.getInt("cantidad")));
                 cajaStock.setText(String.valueOf(rs.getInt("stock")));
             }
+            botonGuardar.setVisible(false);
+            botonEditar.setVisible(true);
 
-        } catch (Exception ex) {
+        } 
+        catch (Exception ex) {
             System.err.println("Error, " + ex);
         }
     }//GEN-LAST:event_tablaInverntarioMouseClicked
 
     private void botonEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonEditarActionPerformed
+    
         Producto producto = new Producto();
         ControladorProducto ctlp = new ControladorProducto();
         int seleccionCombo = comboCategoria.getSelectedIndex();
+        
+        UnionPP union_pp = new UnionPP();
+        ControladorUnionPP ctrl_union_pp = new ControladorUnionPP();
 
-        //Aqui estamos Actualizando la TAbla
+        // Aquí obtenemos el stock actual del producto desde la base de datos
+        int stockActual = ctlp.obtenerStockProducto(cajaCodigo.getText());
+        int seleccion_proveedores = combo_proveedores.getSelectedIndex();
+
+        // Actualizamos los datos del producto
         producto.setCodigoI(cajaCodigo.getText());
         producto.setNombre(cajaNombre.getText());
         producto.setPrecio(Integer.parseInt(cajaPrecio.getText()));
         producto.setIdCategoria(seleccionCombo);
         producto.setCantidad(Integer.parseInt(cajaCantidad.getText()));
-        producto.setStock(Integer.parseInt(cajaStock.getText()));
+        producto.setStock(stockActual); // Mantenemos el stock actual obtenido de la base de datos
         producto.setIdProducto(Integer.parseInt(cajaNumeros.getText()));
+        
+
         if (ctlp.modificar(producto)) {
             JOptionPane.showMessageDialog(null, "Registro Correcto");
             actualizarTabla();
-
         } else {
-            JOptionPane.showMessageDialog(null, "Registro InCorrecto");
+            JOptionPane.showMessageDialog(null, "Registro Incorrecto");
             actualizarTabla();
             limpiarCajas();
         }
-
+        botonGuardar.setVisible(true);
     }//GEN-LAST:event_botonEditarActionPerformed
 
     private void botonEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonEliminarActionPerformed
@@ -495,10 +574,6 @@ public class VentanaInventario extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_cajaBuscarXIDActionPerformed
 
-    private void imagenFondoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imagenFondoMouseClicked
-        limpiarCajas();
-    }//GEN-LAST:event_imagenFondoMouseClicked
-
     private void botonImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonImprimirActionPerformed
         try {
             Excel.reporte();
@@ -513,6 +588,11 @@ public class VentanaInventario extends javax.swing.JDialog {
             actualizarTabla();
         }
     }//GEN-LAST:event_FiltrarXComboActionPerformed
+
+    private void combo_proveedoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_combo_proveedoresActionPerformed
+        
+        
+    }//GEN-LAST:event_combo_proveedoresActionPerformed
     public void actualizarTabla() {
         DefaultTableModel modeloTabla = new DefaultTableModel();
         tablaInverntario.setModel(modeloTabla);
@@ -565,6 +645,7 @@ public class VentanaInventario extends javax.swing.JDialog {
         cajaStock.setText("");
         FiltrarXCombo.setSelectedIndex(0);
         cajaBuscarXID.setText("");
+        combo_proveedores.setSelectedIndex(0);
     }
 
     /**
@@ -625,8 +706,10 @@ public class VentanaInventario extends javax.swing.JDialog {
     public javax.swing.JTextField cajaPrecio;
     public javax.swing.JTextField cajaStock;
     public javax.swing.JComboBox<String> comboCategoria;
+    public javax.swing.JComboBox<String> combo_proveedores;
     private javax.swing.JLabel etiquetaCodigo;
     private javax.swing.JLabel etiquetaDescripcion;
+    private javax.swing.JLabel etiquetaDescripcion1;
     private javax.swing.JLabel etiquetaNombre;
     private javax.swing.JLabel etiquetaNumeroTabla;
     private javax.swing.JLabel etiquetaPrecio;
